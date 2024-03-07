@@ -15,10 +15,11 @@ class User(Base):
 class Admin(Base):
     __tablename__='admin'
     user_id=Column(Integer,primary_key=True)
-    hashed_password=Column(String)
+    password=Column(String)
     
 class Game(Base):
     __tablename__='game'
+    id = Column(Integer, primary_key=True)
     name=Column(String)
     author=Column(String)
     steam_id=Column(Integer,unique=True)
@@ -26,6 +27,7 @@ class Game(Base):
     
 class Order(Base):
     __tablename__='order'
+    id = Column(Integer, primary_key=True)
     user_id=Column(String)
     steam_id=Column(String)
     

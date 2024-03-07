@@ -20,5 +20,5 @@ class Game(BaseModel):
     price:float
 class Order(BaseModel):
     user_id:str
-    steam_id:id
+    steam_id:str
     
