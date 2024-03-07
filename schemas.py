@@ -1,28 +1,24 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String ,Float
-from sqlalchemy.orm import relationship
-from .database import Base
+from pydantic import BaseModel
 
-class User(Base):
-    __tablename__='users'
-    user_id=Column(Integer,primary_key=True)
-    hashed_password=Column(String)
-    name=Column(String)
-    last_name=Column(String)
-    phone_number=Column(Integer,unique=True)
-    steam_userName=Column(String)
-    steam_password=Column(String)
-    
-class Admin(Base):
-    user_id=Column(Integer,primary_key=True)
-    hashed_password=Column(String)
+class User(BaseModel):
+    user_id:str
+    password:str
+    name:str
+    last_name:str
+    phone_number:str
+    steam_usreName:str
+    steam_password:str
 
-class Game(Base):
-    name=Column(String)
-    author=Column(String)
-    steam_id=Column(Integer,unique=True)
-    price=Column(Float)
-    
-class Order(Base):
-    user_id=Column(String)
-    steam_id=Column(String)
+class Admin(BaseModel):
+    user_id:str
+    password:str
+
+class Game(BaseModel):
+    name:str
+    author:str
+    steam_id:int
+    price:float
+class Order(BaseModel):
+    user_id:str
+    steam_id:id
     
