@@ -1,10 +1,14 @@
-from fastapi import FastAPI,Depends
-from files import schemas,models
+from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
-from files.database import SessionLocal,engine
-app = FastAPI()
+
+import crud, models, schemas
+from database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+
+
 def get_db():
     db = SessionLocal()
     try:
@@ -12,12 +16,11 @@ def get_db():
     finally:
         db.close()
         
-def signIn_admin(db: Session=Depends(get_db),admin=schemas.Admin):
-    db_item=models.Admin(**schemas.Admin)
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    return db_item
+@app.post('/user/signup')
+async def add_user(user:schemas.UserCreate,db:Session=Depends(get_db)):
+    crud.create_user(db=db,user=user)
+    return {}
+
 @app.post('/admin/signin')
 async def add_admin(admin:schemas.Admin,db: Session=Depends(get_db)):
     db_item=models.Admin(**admin.dict())
@@ -26,9 +29,7 @@ async def add_admin(admin:schemas.Admin,db: Session=Depends(get_db)):
     db.refresh(db_item)
     return db_item
 
-@app.post('/user/signin')
-async def add_user(user:schemas.User):
-    return user
+
 
 @app.get('/gameslist/')
 async def show_games_list():
