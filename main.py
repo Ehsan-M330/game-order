@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
+import uvicorn
 
 import crud, models, schemas
 from database import SessionLocal, engine
@@ -7,7 +8,6 @@ from database import SessionLocal, engine
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
 
 def get_db():
     db = SessionLocal()
@@ -38,6 +38,10 @@ async def show_games_list():
 @app.post('/orderagame/{game_id}')
 async def order_a_game(game_id:int,order:schemas.Order):
     pass
+
+if __name__=="__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
+
 
 
 
