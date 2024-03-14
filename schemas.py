@@ -1,26 +1,33 @@
 from pydantic import BaseModel
 
 class UserBase(BaseModel):
-    user_id:str
+    user_name:str
     name:str
     last_name:str
     phone_number:str
+    
+class UserProfile(UserBase):
     steam_userName:str
     steam_password:str
     
-class UserCreate(UserBase):
-    password:str
-        
-class User(UserBase):
+class UserIn(UserProfile):
+    password:str  
+    pass
+class UserOut(UserProfile):
     id:int
-    
     class Config:
         orm_mode=True
-    
-class Admin(BaseModel):
-    user_id:str
-    password:str
+        
+        
+class AdminIn(UserBase):
+    password:str    
+class AdminOut(UserBase):
+    id:int
+    class Config:
+        orm_mode=True
+        
 
+    
 class Game(BaseModel):
     name:str
     author:str

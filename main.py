@@ -17,17 +17,14 @@ def get_db():
         db.close()
         
 @app.post('/user/signup')
-async def add_user(user:schemas.UserCreate,db:Session=Depends(get_db)):
+async def add_user(user:schemas.UserIn,db:Session=Depends(get_db)):
     crud.create_user(db=db,user=user)
     return {}
 
-@app.post('/admin/signin')
-async def add_admin(admin:schemas.Admin,db: Session=Depends(get_db)):
-    db_item=models.Admin(**admin.dict())
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    return db_item
+@app.post('/admin/singup')
+async def add_admin(admin:schemas.AdminIn,db: Session=Depends(get_db)):
+    crud.create_admin(db=db,admin=admin)
+    return {}
 
 
 

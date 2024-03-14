@@ -1,16 +1,45 @@
 from sqlalchemy.orm import Session
-
+import hashlib
 import models, schemas
 
-def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
+def hash_password(password: str) -> str:
+    """Hashes a password using SHA-256."""
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    return hashed_password
 
-def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"
-    user_data = user.model_dump()  
-    user_data['hashed_password'] = user_data.pop('password')
-    db_user = models.User(**user_data)
+def get_user(db: Session, id: int):
+    return db.query(models.User).filter(models.User.id == id).first()
+
+def create_user(db: Session, user: schemas.UserIn):
+    user.password = hash_password(user.password)
+    
+    db_user = models.User(
+                                name=user.name,
+                                last_name=user.last_name,
+                                user_name=user.user_name,
+                                hashed_password=user.password,
+                                phone_number=user.phone_number,
+                                administration_role=False)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return db_user
+    
+    db_profile = models.Profile(
+                                steam_userName=user.steam_userName,
+                                steam_password=user.steam_password,
+                                user_id=db_user.id)
+    
+    db.add(db_profile)
+    db.commit()
+
+def create_admin(db: Session,admin:schemas.AdminIn):
+    admin.password = hash_password(admin.password)
+    db_admin = models.User( 
+                            name=admin.name,
+                            last_name=admin.last_name,
+                            user_name=admin.user_name,
+                            hashed_password=admin.password,
+                            phone_number=admin.phone_number,
+                            administration_role=True)
+    db.add(db_admin)
+    db.commit()
