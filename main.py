@@ -27,10 +27,14 @@ async def add_admin(admin:schemas.AdminIn,db: Session=Depends(get_db)):
     return {}
 
 
-
+@app.post('/addgame/')
+async def add_game(game:schemas.GameIn,db:Session=Depends(get_db)):
+    crud.create_game(db=db,game=game)
+    return {}
 @app.get('/gameslist/')
-async def show_games_list():
-    pass
+async def show_games_list(db:Session=Depends(get_db)):
+    return crud.get_games(db=db)
+
 
 @app.post('/orderagame/{game_id}')
 async def order_a_game(game_id:int,order:schemas.Order):

@@ -43,3 +43,17 @@ def create_admin(db: Session,admin:schemas.AdminIn):
                             administration_role=True)
     db.add(db_admin)
     db.commit()
+    
+def create_game(db:Session,game:schemas.GameIn):
+    db_game=models.Game(
+                            name=game.name,
+                            steam_id=game.steam_id,
+                            author=game.author,
+                            price=game.price)
+    db.add(db_game)
+    db.commit()
+    
+def get_games(db:Session):
+    db_games=db.query(models.Game).all()
+    return db_games
+    

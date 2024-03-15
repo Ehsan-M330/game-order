@@ -14,6 +14,9 @@ class User(Base):
 
     # One-to-one relationship with Profile
     profile = relationship("Profile", uselist=False, back_populates="user")
+    # one-to-many relationship with orders
+    orders = relationship("Order", back_populates="user")
+
 
 class Profile(Base):
     __tablename__ = 'profiles'
@@ -26,16 +29,24 @@ class Profile(Base):
     user = relationship("User", back_populates="profile")
     
 class Game(Base):
-    __tablename__='game'
+    __tablename__='games'
     id = Column(Integer, primary_key=True)
     name=Column(String)
     author=Column(String)
-    steam_id=Column(Integer,unique=True)
+    steam_id=Column(String,unique=True)
     price=Column(Float)
     
+    # One-to-one relationship with Order
+    order=relationship("Order",uselist=False,back_populates="game")
+    
 class Order(Base):
-    __tablename__='order'
+    __tablename__='orders'
     id = Column(Integer, primary_key=True)
-    user_name=Column(String)
-    steam_id=Column(String)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    game_id=Column(Integer,ForeignKey('games.id'))
+    
+    # One-to-one relationship with Game
+    game=relationship("Game",back_populates="order")
+    #many-to-one relationship with users
+    user = relationship("User", back_populates="orders")
     

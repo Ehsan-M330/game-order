@@ -8,13 +8,11 @@ class UserBase(BaseModel):
     
 class UserProfile(UserBase):
     steam_userName:str
-    steam_password:str
-    
+    steam_password:str   
 class UserIn(UserProfile):
     password:str  
     pass
 class UserOut(UserProfile):
-    id:int
     class Config:
         orm_mode=True
         
@@ -22,17 +20,23 @@ class UserOut(UserProfile):
 class AdminIn(UserBase):
     password:str    
 class AdminOut(UserBase):
-    id:int
     class Config:
         orm_mode=True
         
 
     
-class Game(BaseModel):
+class GameBase(BaseModel):
     name:str
     author:str
-    steam_id:int
+    steam_id:str
     price:float
+class GameIn(GameBase):
+    pass
+class GameOut(GameBase):
+    class Confing:
+        orm_mode=True
+        
+        
 class Order(BaseModel):
     user_id:str
     steam_id:str
