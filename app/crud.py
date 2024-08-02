@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 import hashlib
-import models, schemas
+from app import models, schemas
+from enums.user_roles import UserRole
 
 def hash_password(password: str) -> str:
     """Hashes a password using SHA-256."""
@@ -19,7 +20,7 @@ def create_user(db: Session, user: schemas.UserIn):
                                 user_name=user.user_name,
                                 hashed_password=user.password,
                                 phone_number=user.phone_number,
-                                administration_role=False)
+                                role=UserRole.USER)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -40,7 +41,7 @@ def create_admin(db: Session,admin:schemas.AdminIn):
                             user_name=admin.user_name,
                             hashed_password=admin.password,
                             phone_number=admin.phone_number,
-                            administration_role=True)
+                            role=UserRole.ADMIN)
     db.add(db_admin)
     db.commit()
     
@@ -57,3 +58,8 @@ def get_games(db:Session):
     db_games=db.query(models.Game).all()
     return db_games
     
+    
+    
+def get_user(db:Session, username: str):
+    user_dict=db.query(models.User).filter(models.User.user_name==username).first()
+    return user_dict

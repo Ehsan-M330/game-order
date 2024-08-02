@@ -1,16 +1,17 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String ,Float
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String ,Float ,Enum
 from sqlalchemy.orm import relationship
-from database import Base
-
+from app.database import Base
+from enums.user_roles import UserRole
+    
 class User(Base):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    user_name = Column(String, unique=True)
+    id = Column(Integer, primary_key=True, index=True)
+    user_name = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     name = Column(String)
     last_name = Column(String)
     phone_number = Column(String)
-    administration_role = Column(Boolean)
+    role = Column(Enum(UserRole))
 
     # One-to-one relationship with Profile
     profile = relationship("Profile", uselist=False, back_populates="user")
@@ -20,8 +21,8 @@ class User(Base):
 
 class Profile(Base):
     __tablename__ = 'profiles'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), unique=True)
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), unique=True, index=True)
     steam_userName = Column(String)
     steam_password = Column(String)
 
@@ -30,8 +31,8 @@ class Profile(Base):
     
 class Game(Base):
     __tablename__='games'
-    id = Column(Integer, primary_key=True)
-    name=Column(String)
+    id = Column(Integer, primary_key=True, index=True)
+    name=Column(String, index=True)
     author=Column(String)
     steam_id=Column(String,unique=True)
     price=Column(Float)
@@ -41,7 +42,7 @@ class Game(Base):
     
 class Order(Base):
     __tablename__='orders'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     game_id=Column(Integer,ForeignKey('games.id'))
     

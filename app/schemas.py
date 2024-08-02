@@ -1,4 +1,6 @@
 from pydantic import BaseModel
+from enums.user_roles import UserRole
+
 
 class UserBase(BaseModel):
     user_name:str
@@ -14,14 +16,14 @@ class UserIn(UserProfile):
     pass
 class UserOut(UserProfile):
     class Config:
-        orm_mode=True
+        from_attributes=True
         
         
 class AdminIn(UserBase):
     password:str    
 class AdminOut(UserBase):
     class Config:
-        orm_mode=True
+        from_attributes=True
         
 
     
@@ -34,10 +36,19 @@ class GameIn(GameBase):
     pass
 class GameOut(GameBase):
     class Confing:
-        orm_mode=True
+        from_attributes=True
         
         
 class Order(BaseModel):
     user_id:str
     steam_id:str
     
+    
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: str | None = None
+    role:UserRole | None = None
