@@ -11,8 +11,6 @@ from app.routers import auth, game_order
 
 models.Base.metadata.create_all(bind=engine)
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
 app = FastAPI()
 
 app.include_router(game_order.router)

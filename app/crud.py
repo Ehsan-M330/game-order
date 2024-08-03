@@ -2,17 +2,18 @@ from sqlalchemy.orm import Session
 import hashlib
 from app import models, schemas
 from enums.user_roles import UserRole
+from app.auth.hashing import get_password_hash
 
-def hash_password(password: str) -> str:
-    """Hashes a password using SHA-256."""
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    return hashed_password
+# def hash_password(password: str) -> str:
+#     """Hashes a password using SHA-256."""
+#     hashed_password = hashlib.sha256(password.encode()).hexdigest()
+#     return hashed_password
 
 def get_user(db: Session, id: int):
     return db.query(models.User).filter(models.User.id == id).first()
 
 def create_user(db: Session, user: schemas.UserIn):
-    user.password = hash_password(user.password)
+    user.password = get_password_hash(user.password)
     
     db_user = models.User(
                                 name=user.name,
@@ -34,7 +35,7 @@ def create_user(db: Session, user: schemas.UserIn):
     db.commit()
 
 def create_admin(db: Session,admin:schemas.AdminIn):
-    admin.password = hash_password(admin.password)
+    admin.password = get_password_hash(admin.password)
     db_admin = models.User( 
                             name=admin.name,
                             last_name=admin.last_name,

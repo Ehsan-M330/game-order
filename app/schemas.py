@@ -15,6 +15,7 @@ class UserIn(UserProfile):
     password:str  
     pass
 class UserOut(UserProfile):
+    role:UserRole
     class Config:
         from_attributes=True
         

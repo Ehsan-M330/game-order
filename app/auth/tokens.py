@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta, timezone
 from app.auth.dependencies import SECRET_KEY, ALGORITHM
+from app import schemas
 import jwt
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
+def create_access_token(data:dict, expires_delta: timedelta | None = None):
+    to_encode = {'sub':data.user_name , 'role':str(data.role), 'id':data.id}
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
