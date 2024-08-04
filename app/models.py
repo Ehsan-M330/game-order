@@ -6,7 +6,7 @@ from enums.user_roles import UserRole
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
-    user_name = Column(String, unique=True, index=True)
+    username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     name = Column(String)
     last_name = Column(String)
@@ -23,7 +23,7 @@ class Profile(Base):
     __tablename__ = 'profiles'
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'), unique=True, index=True)
-    steam_userName = Column(String)
+    steam_username = Column(String)
     steam_password = Column(String)
 
     # Define the back reference to User
@@ -39,7 +39,6 @@ class Game(Base):
     
     # One-to-one relationship with Order
     order=relationship("Order",uselist=False,back_populates="game")
-    
 class Order(Base):
     __tablename__='orders'
     id = Column(Integer, primary_key=True, index=True)

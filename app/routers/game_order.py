@@ -1,11 +1,7 @@
-from datetime import datetime, timedelta, timezone
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from app import crud, models, schemas
-from app.auth import authenticate,dependencies,tokens
-from app.database import SessionLocal, engine
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jwt.exceptions import InvalidTokenError
+from app.database import SessionLocal
 from typing import Annotated
 
 

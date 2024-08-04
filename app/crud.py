@@ -18,7 +18,7 @@ def create_user(db: Session, user: schemas.UserIn):
     db_user = models.User(
                                 name=user.name,
                                 last_name=user.last_name,
-                                user_name=user.user_name,
+                                username=user.username,
                                 hashed_password=user.password,
                                 phone_number=user.phone_number,
                                 role=UserRole.USER)
@@ -27,7 +27,7 @@ def create_user(db: Session, user: schemas.UserIn):
     db.refresh(db_user)
     
     db_profile = models.Profile(
-                                steam_userName=user.steam_userName,
+                                steam_username=user.steam_username,
                                 steam_password=user.steam_password,
                                 user_id=db_user.id)
     
@@ -39,7 +39,7 @@ def create_admin(db: Session,admin:schemas.AdminIn):
     db_admin = models.User( 
                             name=admin.name,
                             last_name=admin.last_name,
-                            user_name=admin.user_name,
+                            username=admin.username,
                             hashed_password=admin.password,
                             phone_number=admin.phone_number,
                             role=UserRole.ADMIN)
@@ -62,5 +62,5 @@ def get_games(db:Session):
     
     
 def get_user(db:Session, username: str):
-    user_dict=db.query(models.User).filter(models.User.user_name==username).first()
+    user_dict=db.query(models.User).filter(models.User.username==username).first()
     return user_dict

@@ -3,13 +3,13 @@ from enums.user_roles import UserRole
 
 
 class UserBase(BaseModel):
-    user_name:str
+    username:str
     name:str
     last_name:str
     phone_number:str
     
 class UserProfile(UserBase):
-    steam_userName:str
+    steam_username:str
     steam_password:str   
 class UserIn(UserProfile):
     password:str  
@@ -52,4 +52,5 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
-    role:UserRole | None = None
+    role: UserRole | None = None
+    id: int
