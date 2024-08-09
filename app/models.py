@@ -45,7 +45,7 @@ class Order(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     game_id=Column(Integer,ForeignKey('games.id'))
-    status=Column(order_status)
+    status=Column(Enum(order_status),default=order_status.PREPARATION)
     # One-to-one relationship with Game
     game=relationship("Game",back_populates="order")
     #many-to-one relationship with users

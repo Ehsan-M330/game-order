@@ -55,10 +55,8 @@ def create_game(db:Session,game:schemas.GameIn):
     db.add(db_game)
     db.commit()
     
-def get_games(db:Session):
-    db_games=db.query(models.Game).all()
-    return db_games
-    
+def get_games(db:Session,page,size):
+    return db.query(models.Game).offset(page-1).limit(size).all()
     
     
 def get_user(db:Session, username: str):
