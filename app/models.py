@@ -2,6 +2,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String ,Float ,Enum
 from sqlalchemy.orm import relationship
 from app.database import Base
 from enums.user_roles import UserRole
+from enums.order_status import order_status
     
 class User(Base):
     __tablename__ = 'users'
@@ -44,7 +45,7 @@ class Order(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     game_id=Column(Integer,ForeignKey('games.id'))
-    
+    status=Column(order_status)
     # One-to-one relationship with Game
     game=relationship("Game",back_populates="order")
     #many-to-one relationship with users
