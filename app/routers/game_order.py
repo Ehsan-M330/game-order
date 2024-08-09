@@ -1,5 +1,6 @@
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import text
 from app import crud, models, schemas
 from app.database import SessionLocal
@@ -31,13 +32,54 @@ async def add_admin(admin:schemas.AdminIn,db: Session=Depends(get_db)):
 
 @router.get('/gameslist/')
 async def show_games_list(size:int=10,page:int=1,db:Session=Depends(get_db)):
-    total_data=calculate_total_data(db=db,tableName=models.Game)
-    total_pages=math.ceil(total_data / size)
-    data = crud.get_games(db=db,page=page,size=size)
-    return {
-        "data": data,
-        "total_data": total_data,
-        "total_pages": total_pages,}
+    try:
+        # Validate the input parameters
+        if size <= 0 or page <= 0:
+            raise HTTPException(
+                status_code=400, 
+                detail="Size and page must be greater than zero."
+            )
+        
+        # Calculate the total number of data entries
+        total_data = calculate_total_data(db=db, tableName=models.Game)
+        
+        # Calculate total pages and validate the page number
+        total_pages = math.ceil(total_data / size)
+        if page > total_pages:
+            raise HTTPException(
+                status_code=404, 
+                detail="Page number exceeds total pages."
+            )
+        
+        # Fetch the data
+        data = crud.get_games(db=db, page=page, size=size)
+        
+        # Handle empty data sets
+        if not data:
+            return {
+                "data": [],
+                "total_data": total_data,
+                "total_pages": total_pages,
+                "message": "No games found."
+            }
+        
+        return {
+            "data": data,
+            "total_data": total_data,
+            "total_pages": total_pages,
+        }
+    except SQLAlchemyError as e:
+        # Handle database errors
+        raise HTTPException(
+            status_code=500, 
+            detail="An error occurred while accessing the database."
+        )
+    except Exception as e:
+        # Catch any other exceptions
+        raise HTTPException(
+            status_code=500, 
+            detail="An unexpected error occurred."
+        )
 
 @router.get('/orderslist/')
 async def show_orders_list(db:Session=Depends(get_db)):
@@ -45,6 +87,7 @@ async def show_orders_list(db:Session=Depends(get_db)):
 
 @router.post('/orderagame/{game_id}')
 async def order_a_game(game_id:int,order:schemas.Order):
+    
     pass
 
 
