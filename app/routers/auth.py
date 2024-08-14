@@ -73,3 +73,18 @@ async def add_game(user:user_dependency, game:schemas.GameIn,db:Session=Depends(
         )   
     crud.create_game(db=db,game=game)
     return {"message: Game added successfully"}
+
+@router.post('/orderagame/',status_code=status.HTTP_201_CREATED)
+async def order_a_game(user:user_dependency,order:schemas.OrderIn,db:Session=Depends(get_db)):
+    if user.role==UserRole.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only Users can order a game",
+        )
+    if crud.check_order(db=db,order=order)==False:
+        raise HTTPException(
+            detail="Wrong input"
+        )
+    
+    crud.create_order(db=db,order=order,user_id=user.id)
+    return {"message: Order added successfully"}

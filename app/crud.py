@@ -57,7 +57,20 @@ def create_game(db:Session,game:schemas.GameIn):
     
 def get_games(db:Session,page,size):
     return db.query(models.Game).offset(page-1).limit(size).all()
+
+def check_order(db:Session,order:schemas.OrderIn):
+    if db.query(models.Game).filter(models.Game.id==order.game_id).first():
+        return True
+    else : False 
+def create_order(db:Session,order:schemas.OrderIn,user_id):
+    db_order=models.Order(
+                            user_id = user_id,
+                            game_id = order.game_id)
+    db.add(db_order)
+    db.commit()
     
+def get_orders(db:Session,page,size):
+    return db.query(models.Order).offset(page-1).limit(size).all()
     
 def get_user(db:Session, username: str):
     user_dict=db.query(models.User).filter(models.User.username==username).first()
