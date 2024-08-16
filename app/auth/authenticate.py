@@ -1,10 +1,17 @@
 from app.auth import hashing
-from app.crud import get_user
+from app.crud import get_user_byUsername
+from app.schemas import UserOut_withPassword
+from sqlalchemy.orm import Session
 
-def authenticate_user(db, username: str, password: str):
-    user = get_user(db, username)
+
+def authenticate_user(
+    db: Session, username: str, password: str
+) -> UserOut_withPassword | None:
+    user = get_user_byUsername(db, username)
     if not user:
-        return False
-    if not hashing.verify_password(password, user.hashed_password):
-        return False
+        return None
+    if not hashing.verify_password(
+        plain_password=password, hashed_password=user.hashed_password
+    ):
+        return None
     return user

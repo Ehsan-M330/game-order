@@ -9,9 +9,3 @@ app = FastAPI()
 
 app.include_router(game_order.router)
 app.include_router(auth.router)
-
-
-
-
-
-
