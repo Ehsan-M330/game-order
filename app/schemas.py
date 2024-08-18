@@ -1,9 +1,8 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from enums.user_roles import UserRole
 from enums.order_status import order_status
 from typing import List
 from datetime import datetime
-from app import models
 
 
 class UserBase(BaseModel):

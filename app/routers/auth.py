@@ -1,15 +1,21 @@
 from datetime import timedelta
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
-from app import crud, schemas
+from app import crud, schemas, models
 from app.auth import authenticate, dependencies, tokens
 from app.database import SessionLocal
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
+from sqlalchemy.exc import SQLAlchemyError
 from typing import Annotated
 import jwt
 from app.auth.dependencies import SECRET_KEY, ALGORITHM
 from enums.user_roles import UserRole
+from app.utils.pagination_helpers import (
+    calculate_total_data,
+    validate_pagination_parameters,
+)
+import math
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -99,3 +105,66 @@ async def order_a_game(
 
     crud.create_order(db=db, order=order, user_id=user.id)
     return {"message: Order added successfully"}
+
+
+@router.get("/myorders", response_model=schemas.OrdersListResponse)
+async def get_user_orders(
+    user: user_dependency, size: int = 10, page: int = 1, db: Session = Depends(get_db)
+) -> schemas.OrdersListResponse:
+    if user.role == UserRole.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only Users can see their orders",
+        )
+    try:
+        # Validate the input parameters
+        validate_pagination_parameters(size=size, page=page)
+
+        # Calculate the total number of data entries
+        total_data = calculate_total_data(
+            db=db, tableName=models.Order, filter_by=models.Order.user_id == user.id
+        )
+
+        # Calculate total pages and validate the page number
+        total_pages = math.ceil(total_data / size)
+
+        if total_pages == 0:
+            return schemas.OrdersListResponse(
+                data=[], total_data=0, total_pages=0, message="No orders found."
+            )
+
+        if page > total_pages:
+            raise HTTPException(
+                status_code=404, detail="Page number exceeds total pages."
+            )
+
+        # Fetch the data
+        data = crud.get_data_with_pagination(
+            db=db,
+            tableName=models.Order,
+            page=page,
+            size=size,
+            filter_by=models.Order.user_id == user.id,
+        )
+
+        # Handle empty data sets
+        if not data:
+            return schemas.OrdersListResponse(
+                data=[],
+                total_data=total_data,
+                total_pages=total_pages,
+                message="No games found.",
+            )
+        data = [data.__dict__ for data in data]
+
+        return schemas.OrdersListResponse(
+            data=[schemas.OrderOut.model_validate(data) for data in data],
+            total_data=total_data,
+            total_pages=total_pages,
+        )
+
+    except SQLAlchemyError:
+        # Handle database errors
+        raise HTTPException(
+            status_code=500, detail="An error occurred while accessing the database."
+        )

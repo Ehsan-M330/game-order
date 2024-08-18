@@ -4,6 +4,8 @@ from app import models, schemas
 from enums.user_roles import UserRole
 from app.auth.hashing import get_password_hash
 from typing import List
+from sqlalchemy.sql.elements import ColumnElement
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
 # def hash_password(password: str) -> str:
 #     """Hashes a password using SHA-256."""
@@ -68,10 +70,6 @@ def create_game(db: Session, game: schemas.GameIn):
     db.commit()
 
 
-def get_games(db: Session, page: int, size: int) -> List[models.Game] | None:
-    return db.query(models.Game).offset(page - 1).limit(size).all()
-
-
 def check_order(db: Session, order: schemas.OrderIn):
     if db.query(models.Game).filter(models.Game.id == order.game_id).first():
         return True
@@ -85,5 +83,17 @@ def create_order(db: Session, order: schemas.OrderIn, user_id: int):
     db.commit()
 
 
-def get_orders(db: Session, page: int, size: int) -> List[models.Order] | None:
-    return db.query(models.Order).offset(page - 1).limit(size).all()
+def get_data_with_pagination(
+    db: Session,
+    tableName: DeclarativeMeta,
+    page: int,
+    size: int,
+    filter_by: ColumnElement[bool] | None = None,
+) -> List[models.Order] | None:
+
+    query = db.query(tableName)
+
+    if filter_by is not None:
+        query = query.filter(filter_by)
+
+    return query.offset(page - 1).limit(size).all()
