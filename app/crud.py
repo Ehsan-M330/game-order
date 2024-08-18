@@ -3,6 +3,7 @@ import hashlib  # type: ignore
 from app import models, schemas
 from enums.user_roles import UserRole
 from app.auth.hashing import get_password_hash
+from typing import List
 
 # def hash_password(password: str) -> str:
 #     """Hashes a password using SHA-256."""
@@ -67,7 +68,7 @@ def create_game(db: Session, game: schemas.GameIn):
     db.commit()
 
 
-def get_games(db: Session, page: int, size: int):
+def get_games(db: Session, page: int, size: int) -> List[models.Game] | None:
     return db.query(models.Game).offset(page - 1).limit(size).all()
 
 
@@ -84,5 +85,5 @@ def create_order(db: Session, order: schemas.OrderIn, user_id: int):
     db.commit()
 
 
-def get_orders(db: Session, page: int, size: int):
+def get_orders(db: Session, page: int, size: int) -> List[models.Order] | None:
     return db.query(models.Order).offset(page - 1).limit(size).all()

@@ -1,8 +1,9 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Float, Enum
+from sqlalchemy import Column, ForeignKey, Integer, String, Float, Enum, DateTime
 from sqlalchemy.orm import relationship
 from app.database import Base
 from enums.user_roles import UserRole
 from enums.order_status import order_status
+import datetime
 
 
 class User(Base):
@@ -50,6 +51,7 @@ class Order(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     game_id = Column(Integer, ForeignKey("games.id"))
     status = Column(Enum(order_status), default=order_status.PREPARATION)
+    order_date = Column(DateTime, default=datetime.datetime.now(datetime.timezone.utc))
     # One-to-one relationship with Game
     game = relationship("Game", back_populates="order")
     # many-to-one relationship with users

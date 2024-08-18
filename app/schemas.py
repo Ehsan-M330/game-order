@@ -1,7 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from enums.user_roles import UserRole
 from enums.order_status import order_status
 from typing import List
+from datetime import datetime
+from app import models
 
 
 class UserBase(BaseModel):
@@ -59,7 +61,7 @@ class GameIn(GameBase):
 class GameOut(GameBase):
     id: int
 
-    class Confing:
+    class Config:
         from_attributes = True
 
 
@@ -84,6 +86,7 @@ class OrderOut(Order):
     user_id: int
     status: order_status
     id: int
+    order_date: datetime
 
     class Confing:
         from_attributes = True
