@@ -2,6 +2,7 @@ from faker import Faker
 import random
 from datetime import datetime
 from enums.order_status import order_status
+from enums.user_roles import UserRole
 
 fake = Faker()
 
@@ -42,8 +43,8 @@ def generate_fake_game_name() -> str:
     return fake.word()
 
 
-def generate_fake_role() -> str:
-    return fake.word()
+def generate_fake_role() -> UserRole:
+    return random.choice(list(UserRole))
 
 
 def generate_fake_password() -> str:

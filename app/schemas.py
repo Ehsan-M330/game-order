@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from enums.user_roles import UserRole
 from typing import List, Optional
 from datetime import datetime
+from enums.user_roles import UserRole
 from tools.fake_data import (
     generate_fake_username,
     generate_fake_name,
@@ -58,11 +59,9 @@ class UserIn(UserProfile):
 
 class UserOut(UserProfile):
     id: int = Field(
-        ..., examples=[generate_fake_id()], description="The user's unique identifier"
+        ..., examples=[UserRole.USER], description="The user's unique identifier"
     )
-    role: UserRole = Field(
-        ..., examples=[generate_fake_role()], description="The user's role"
-    )
+    role: UserRole = Field(..., examples=[], description="The user's role")
 
     class Config:
         from_attributes = True
@@ -87,7 +86,7 @@ class AdminOut(UserBase):
         ..., examples=[generate_fake_id()], description="The admin's unique identifier"
     )
     role: UserRole = Field(
-        ..., examples=[generate_fake_role()], description="The admin's role"
+        ..., examples=[UserRole.USER], description="The admin's role"
     )
 
     class Config:
@@ -181,7 +180,7 @@ class TokenData(BaseModel):
     username: Optional[str] = Field(
         None, examples=[generate_fake_username()], description="The username"
     )
-    role: Optional[str] = Field(
+    role: Optional[UserRole] = Field(
         None, examples=[generate_fake_role()], description="The user's role"
     )
     id: int = Field(
