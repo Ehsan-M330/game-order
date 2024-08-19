@@ -22,13 +22,23 @@ def get_db():
         db.close()
 
 
-@router.post("/user/signup", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/user/signup",
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a new user",
+    description="Create a new user in the system",
+)
 async def add_user(user: schemas.UserIn, db: Session = Depends(get_db)):
     crud.create_user(db=db, user=user)
     return {"message": "User created successfully"}
 
 
-@router.post("/admin/singup", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/admin/singup",
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a new admin",
+    description="Create a new admin in the system",
+)
 async def add_admin(admin: schemas.AdminIn, db: Session = Depends(get_db)):
     crud.create_admin(db=db, admin=admin)
     return {"message": "Admin created successfully"}
