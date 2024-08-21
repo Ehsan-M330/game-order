@@ -9,6 +9,11 @@ from app.utils.pagination_helpers import (
     calculate_total_data,
     validate_pagination_parameters,
 )
+from app.utils.phone_number_verification import (
+    create_random_verification_code,
+    stor_code,
+    check_code,
+)
 import math
 
 router = APIRouter()
@@ -24,13 +29,38 @@ def get_db():
 
 @router.post(
     "/user/signup",
-    status_code=status.HTTP_201_CREATED,
+    status_code=status.HTTP_200_OK,
     summary="Create a new user",
     description="Create a new user in the system",
 )
 async def add_user(user: schemas.UserIn, db: Session = Depends(get_db)):
+    code = create_random_verification_code()
+    await stor_code(key=f"verification_code:{user.phone_number}", value=code)
+    print(code)
+    return {
+        "message": "Verification code sent to your phone number. Please verify to complete signup."
+    }
+
+
+@router.post(
+    "/user/verify",
+    status_code=status.HTTP_201_CREATED,
+    summary="Verify phone number",
+    description="Verify the phone number to complete the signup process",
+)
+async def verify_user(code: int, user: schemas.UserIn, db: Session = Depends(get_db)):
+    # Step 1: Validate the verification code
+    is_valid = await check_code(user.phone_number, code)
+
+    if not is_valid:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired verification code",
+        )
+
+    # Step 2: Create the user in the database if the code is valid
     crud.create_user(db=db, user=user)
-    return {"message": "User created successfully"}
+    return {"message": "Phone number verified and user created successfully"}
 
 
 @router.post(
