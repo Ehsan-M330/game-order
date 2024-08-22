@@ -1,9 +1,10 @@
 # app/seed_data.py
 
 import sys
+import os
 
 # Add the project's root directory to sys.path
-sys.path.append("d:/fastapi project/game-order")
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
