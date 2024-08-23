@@ -1,4 +1,6 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException, status
 import hashlib  # type: ignore
 from app import models, schemas
 from enums.user_roles import UserRole
@@ -35,8 +37,14 @@ def create_user(db: Session, user: schemas.UserIn):
         role=UserRole.USER,
     )
     db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username is already in use.",
+        )
 
     db_profile = models.Profile(
         steam_username=user.steam_username,
@@ -59,7 +67,15 @@ def create_admin(db: Session, admin: schemas.AdminIn):
         role=UserRole.ADMIN,
     )
     db.add(db_admin)
-    db.commit()
+
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username is already in use.",
+        )
 
 
 def create_game(db: Session, game: schemas.GameIn):
@@ -67,7 +83,14 @@ def create_game(db: Session, game: schemas.GameIn):
         name=game.name, steam_id=game.steam_id, author=game.author, price=game.price
     )
     db.add(db_game)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Steam ID is already in use.",
+        )
 
 
 def check_order(db: Session, order: schemas.OrderIn):
