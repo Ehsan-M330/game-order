@@ -1,0 +1,46 @@
+# version: '3.8'
+
+services:
+  # FastAPI application service
+  api:
+    build: .
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_URL: "postgresql://postgres:admin@db:5432/game_order_db"
+      REDIS_URL: "redis://redis:6379/0"
+    networks:
+      - app-network
+
+  # PostgreSQL database service
+  db:
+    image: postgres:16.4-bookworm
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: game_order_db
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # Redis service
+  redis:
+    image: redis:7.4.0-bookworm
+    container_name: redis_cache
+    networks:
+      - app-network
+
+# Named volumes for persistence
+# volumes:
+#   postgres_data:
+
+# Custom network
+networks:
+  app-network:
+    driver: bridge

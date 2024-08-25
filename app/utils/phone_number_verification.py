@@ -7,17 +7,18 @@ def create_random_verification_code() -> int:
 
 
 async def stor_code(key: str, value: int):
-    redis_client.set(key, 30, value)
+    redis_client.set(key, value)
 
 
 async def check_code(key: str, value: int) -> bool:
-    code = redis_client.get(key)
+    code = redis_client.get(f"verification_code:{key}")
     if code == None:
         return False
 
     try:
         # Attempt to convert the Redis response to an int for comparison
         return int(code) == value  # type: ignore
+
     except (ValueError, TypeError):
         # If conversion fails, return False
         return False

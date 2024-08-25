@@ -1,0 +1,13 @@
+# Ignore .env files
+.venv
+
+# Ignore other unnecessary files and directories
+.git
+.gitignore
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+Dockerfile
+docker-compose.yml
+.venv.*
