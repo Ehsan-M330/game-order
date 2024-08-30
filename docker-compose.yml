@@ -7,6 +7,8 @@ services:
     container_name: fastapi_app
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app
     depends_on:
       - db
       - redis
@@ -43,4 +45,3 @@ services:
 # Custom network
 networks:
   app-network:
-    driver: bridge
