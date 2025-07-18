@@ -118,7 +118,7 @@ def populate_database(
     session: Session,
     num_admins: int = 5,
     num_users: int = 10,
-    num_games: int = 10,
+    num_games: int = 10000,
     num_orders: int = 20,
 ):
     # Create fake users and profiles

@@ -112,11 +112,11 @@ def get_data_with_pagination(
     page: int,
     size: int,
     filter_by: ColumnElement[bool] | None = None,
-) -> List[models.Order] | None:
+) -> List[models.Order]:
 
     query = db.query(tableName)
 
     if filter_by is not None:
         query = query.filter(filter_by)
 
-    return query.offset(page - 1).limit(size).all()
+    return query.offset((page - 1) * size).limit(size).all()
