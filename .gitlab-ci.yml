@@ -1,4 +1,4 @@
-image: registry.local/alpine:latest
+image: registry.local/alpine-with-docker:latest
 
 stages:
   - build
